@@ -1,0 +1,25 @@
+<AFD>
+  <simbolos>
+    <elemento valor="a" />
+    <elemento valor="b" />
+  </simbolos>
+  <estados>
+    <elemento valor="q1" />
+    <elemento valor="q1q2" />
+    <elemento valor="q1q3" />
+    <elemento valor="q2" />
+  </estados>
+  <estadosFinais>
+    <elemento valor="q1" />
+    <elemento valor="q1q3" />
+    <elemento valor="q1q2" />
+  </estadosFinais>
+  <funcaoPrograma>
+    <elemento destino="q2" origem="q1" simbolo="a" />
+    <elemento destino="q1q3" origem="q2" simbolo="b" />
+    <elemento destino="q1q2" origem="q1q3" simbolo="a" />
+    <elemento destino="q2" origem="q1q2" simbolo="a" />
+    <elemento destino="q1q3" origem="q1q2" simbolo="b" />
+  </funcaoPrograma>
+  <estadoInicial valor="q1" />
+</AFD>

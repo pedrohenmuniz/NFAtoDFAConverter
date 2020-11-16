@@ -1,0 +1,24 @@
+<AFD>
+  <simbolos>
+    <elemento valor="a" />
+    <elemento valor="b" />
+  </simbolos>
+  <estados>
+    <elemento valor="0" />
+    <elemento valor="01" />
+    <elemento valor="02" />
+  </estados>
+  <estadosFinais>
+    <elemento valor="01" />
+    <elemento valor="02" />
+  </estadosFinais>
+  <funcaoPrograma>
+    <elemento destino="01" origem="0" simbolo="a" />
+    <elemento destino="0" origem="0" simbolo="b" />
+    <elemento destino="01" origem="01" simbolo="a" />
+    <elemento destino="02" origem="01" simbolo="b" />
+    <elemento destino="01" origem="02" simbolo="a" />
+    <elemento destino="0" origem="02" simbolo="b" />
+  </funcaoPrograma>
+  <estadoInicial valor="0" />
+</AFD>
