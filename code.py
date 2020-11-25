@@ -6,7 +6,7 @@ import xml.etree.cElementTree as ET
 import sys
 
 DEBUG_MODE = False # Set it to True for printing infos
-FILENAME = 'afn02' # Filename to be read (must be inside "input" folder)
+FILENAME = 'afn01' # Filename to be read (must be inside "input" folder)
 
 def readInput():
   print('Reading {}.xml'.format(FILENAME))
@@ -18,9 +18,6 @@ def readInput():
   dfaSymbols = [] # DFA Symbols
   dfaStates = [] # DFA States
   q = [] # DFA States
-  dfaTfunc = [] # DFA Transition function
-  dfaFinal = [] # DFA Sinal states
-  dfaTransitions = {}
 
   nfaTransitions = {} # NFA Transitions
   nfaFinals = [] # NFA Final states
@@ -72,19 +69,28 @@ def readInput():
   q.append((initialState.getAttribute('valor'),))
   print(initialState.getAttribute('valor')) if DEBUG_MODE else None
 
-  return q, nfaTransitions, nfaFinals, dfaSymbols, dfaTransitions, dfaTfunc, dfaFinal, dfaStates
+  return q, nfaTransitions, nfaFinals, dfaSymbols, dfaStates
 
-def nfaToDfa(q, nfaTransitions, nfaFinals, dfaSymbols, dfaTransitions, dfaTfunc, dfaFinal):
+def nfaToDfa(q, nfaTransitions, nfaFinals, dfaSymbols):
+  dfaTfunc = [] # DFA Transition function
+  dfaFinal = [] # DFA Sinal states
+  dfaTransitions = {}
+
   print('Converting NFA to DFA')
+  # For each q' state, add the possible set of states for each input (initially q0 contains the DFA initial state)
   for inState in q:
+    print("inState: {}".format(inState))
     for symbol in dfaSymbols:
+      # State already exists in DFA
       if len(inState) == 1 and (inState[0], symbol) in nfaTransitions:
         dfaTransitions[(inState, symbol)] = nfaTransitions[(inState[0], symbol)]
         if tuple(dfaTransitions[(inState, symbol)]) not in q:
             q.append(tuple(dfaTransitions[(inState, symbol)]))
+      # States will be the union of all possible states for each input symbol
       else:
         dest = []
         fDest =[]
+        # Return states that can be reached by inState consuming input symbol
         for nState in inState:
           if (nState, symbol) in nfaTransitions and nfaTransitions[(nState, symbol)] not in dest:
               dest.append(nfaTransitions[(nState, symbol)])
@@ -94,13 +100,17 @@ def nfaToDfa(q, nfaTransitions, nfaFinals, dfaSymbols, dfaTransitions, dfaTfunc,
                   if value not in fDest:
                       fDest.append(value)
           dfaTransitions[(inState, symbol)] = fDest 
+          # New NFA state found that is not in q
           if tuple(fDest) not in q: 
               q.append(tuple(fDest))
   
+  # Converts dictionary form to lists
+  # Organize DFA final states in a given way | [q1, "a", [q1,q2], ...]
   for key, value in dfaTransitions.items():
     temp_list = [[key[0], key[1], value]]
     dfaTfunc.extend(temp_list)
 
+  # NFA final states F' will be all NFA states containing DFA final state F
   for q_state in q:
     for f_state in nfaFinals:
         if f_state in q_state:
@@ -144,7 +154,7 @@ def nfaToDfa(q, nfaTransitions, nfaFinals, dfaSymbols, dfaTransitions, dfaTfunc,
     dfaTransitionsPrint.append([origin, symbol, destiny])
   print('dfaTransitionsPrint: {}'.format(dfaTransitionsPrint)) if DEBUG_MODE else None
 
-  # Organize DFA final states
+  
   dfaFinalsPrint = []
   for finalState in dfaFinal:
     state = ''
@@ -191,5 +201,5 @@ def writeOutput(q, dfaSymbols, dfaStates, dfaFinals, dfaTfunc, initialState):
   tree.write('./output/out_{}.xml'.format(FILENAME.replace('afn', 'afd')))
 
 if __name__ == '__main__':
-  q, nfaTransitions, nfaFinals, dfaSymbols, dfaTransitions, dfaTFunc, dfaFinal, dfaStates = readInput()
-  nfaToDfa(q, nfaTransitions, nfaFinals, dfaSymbols, dfaTransitions, dfaTFunc, dfaFinal)
+  q, nfaTransitions, nfaFinals, dfaSymbols, dfaStates = readInput()
+  nfaToDfa(q, nfaTransitions, nfaFinals, dfaSymbols)
